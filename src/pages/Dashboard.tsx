@@ -416,6 +416,7 @@ const Dashboard = () => {
                       <TrendingUp className="w-12 h-12 mx-auto mb-4" />
                       <p className="font-medium">Earnings Graph</p>
                       <p className="text-sm">Chart will show your daily earnings trends</p>
+                      </div>
                     </div>
                   </CardContent>
               </Card>
