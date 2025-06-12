@@ -22,9 +22,9 @@ const App = () => (
           <div className="min-h-screen bg-background text-foreground">
             <Navbar />
             <Routes>
-              <Route path="/" element={<Dashboard />} />
+              <Route path="/" element={<HowItWorks />} />
+              <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/how-it-works" element={<HowItWorks />} />
-             
             </Routes>
             <Footer />
           </div>

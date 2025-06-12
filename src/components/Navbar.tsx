@@ -9,12 +9,12 @@ const Navbar = () => {
   const location = useLocation();
 
   // Don't show navbar on dashboard page
-  if (location.pathname === '/') {
+  if (location.pathname === '/dashboard') {
     return null;
   }
 
   const navigation = [
-    { name: "Dashboard", href: "/" },
+    { name: "Dashboard", href: "/dashboard" },
     { name: "How It Works", href: "/how-it-works" },
   ];
 
