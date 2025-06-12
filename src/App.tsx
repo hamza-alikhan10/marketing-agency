@@ -9,7 +9,6 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Dashboard from "./pages/Dashboard";
 import HowItWorks from "./pages/HowItWorks";
-import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
@@ -25,7 +24,7 @@ const App = () => (
             <Routes>
               <Route path="/" element={<Dashboard />} />
               <Route path="/how-it-works" element={<HowItWorks />} />
-              <Route path="*" element={<NotFound />} />
+             
             </Routes>
             <Footer />
           </div>

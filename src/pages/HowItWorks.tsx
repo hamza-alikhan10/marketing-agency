@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -46,16 +45,34 @@ const HowItWorks = () => {
   return (
     <div className="min-h-screen pt-16">
       {/* Hero Section */}
-      <section className="px-4 sm:px-6 lg:px-8 py-16 bg-gradient-to-br from-background to-muted/20">
+      <section className="px-4 sm:px-6 lg:px-8 py-16 bg-gradient-to-br from-background to-muted/20 flex flex-col items-center justify-center">
         <div className="max-w-4xl mx-auto text-center">
-          <Badge variant="secondary" className="mb-4">How It Works</Badge>
-          <h1 className="text-4xl md:text-5xl font-bold mb-6">
-            Simple Steps to
-            <span className="bg-gradient-to-r from-green-500 to-blue-500 bg-clip-text text-transparent"> Liquidity Yields</span>
+          <div className="flex justify-center items-center mb-4">
+            <Badge variant="secondary" className="text-sm">
+              Trusted by over 1M+ Users
+            </Badge>
+          </div>
+          <h1 className="text-4xl md:text-5xl font-bold mb-4">
+            Maximize Your USDT with <br />
+            <span className="bg-gradient-to-r from-green-500 to-blue-500 bg-clip-text text-transparent">RH Coin Liquidity</span>
           </h1>
-          <p className="text-xl text-muted-foreground mb-8">
-            Understand how our platform generates up to 1% daily yields through RH Coin liquidity provision.
+          <p className="text-lg text-muted-foreground mb-8">
+            Don’t let your USDT sit idle—earn up to 1% daily yields by providing liquidity to RH Coin pools.
           </p>
+          <Button size="lg" className="bg-black text-white hover:bg-gray-800 rounded-full px-6">
+            Get Started Now
+            <ArrowRight className="w-5 h-5 ml-2" />
+          </Button>
+        </div>
+        <div className="mt-1 max-w-2xl w-full">
+          <div className="relative">
+            <div className="absolute inset-0 bg-gradient-to-r from-green-500/20 to-blue-500/20 rounded-lg blur-xl"></div>
+            <img
+              src="/1011.png"
+              alt="RH Coin Dashboard"
+              className="relative w-full rounded-lg shadow-lg"
+            />
+          </div>
         </div>
       </section>
 
