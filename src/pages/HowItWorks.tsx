@@ -59,10 +59,12 @@ const HowItWorks = () => {
           <p className="text-lg text-muted-foreground mb-8">
             Don’t let your USDT sit idle—earn up to 1% daily yields by providing liquidity to RH Coin pools.
           </p>
-          <Button size="lg" className="bg-black text-white hover:bg-gray-800 rounded-full px-6">
-            Get Started Now
-            <ArrowRight className="w-5 h-5 ml-2" />
-          </Button>
+          <Link to="/dashboard">
+  <Button size="lg" className="bg-black text-white hover:bg-gray-800 rounded-full px-6">
+    Get Started Now
+    <ArrowRight className="w-5 h-5 ml-2" />
+  </Button>
+</Link>
         </div>
         <div className="mt-1 max-w-2xl w-full">
           <div className="relative">
