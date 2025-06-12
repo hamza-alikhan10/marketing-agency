@@ -1,13 +1,17 @@
 
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Menu, X } from "lucide-react";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
+
+  // Don't show navbar on dashboard page
+  if (location.pathname === '/') {
+    return null;
+  }
 
   const navigation = [
     { name: "Dashboard", href: "/" },
@@ -44,22 +48,17 @@ const Navbar = () => {
 
           <div className="hidden md:flex items-center space-x-4">
             <ThemeToggle />
-            <Button variant="outline" size="sm">
-              Login
-            </Button>
-            <Button size="sm">Get Started</Button>
           </div>
 
           {/* Mobile menu button */}
           <div className="md:hidden flex items-center space-x-2">
             <ThemeToggle />
-            <Button
-              variant="ghost"
-              size="sm"
+            <button
               onClick={() => setIsOpen(!isOpen)}
+              className="p-2"
             >
               {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-            </Button>
+            </button>
           </div>
         </div>
 
@@ -81,14 +80,6 @@ const Navbar = () => {
                   {item.name}
                 </Link>
               ))}
-              <div className="flex space-x-2 px-3 py-2">
-                <Button variant="outline" size="sm" className="flex-1">
-                  Login
-                </Button>
-                <Button size="sm" className="flex-1">
-                  Get Started
-                </Button>
-              </div>
             </div>
           </div>
         )}
