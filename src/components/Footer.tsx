@@ -14,26 +14,23 @@ const Footer = () => {
               <span className="text-xl font-bold">RobinHood</span>
             </div>
             <p className="text-muted-foreground text-sm">
-              Secure crypto investment platform with daily returns. Transparent, 
-              blockchain-based operations managed by experts.
+              Earn RH Coin by sharing your unused internet bandwidth. 
+              Secure, transparent, and rewarding.
             </p>
           </div>
 
           <div>
             <h3 className="font-semibold mb-4">Platform</h3>
             <ul className="space-y-2 text-sm text-muted-foreground">
+              <li><Link to="/" className="hover:text-primary">Dashboard</Link></li>
               <li><Link to="/how-it-works" className="hover:text-primary">How It Works</Link></li>
-              <li><Link to="/plans" className="hover:text-primary">Plans</Link></li>
-              <li><Link to="/security" className="hover:text-primary">Security</Link></li>
-              <li><Link to="/faq" className="hover:text-primary">FAQ</Link></li>
             </ul>
           </div>
 
           <div>
             <h3 className="font-semibold mb-4">Company</h3>
             <ul className="space-y-2 text-sm text-muted-foreground">
-              <li><Link to="/about" className="hover:text-primary">About Us</Link></li>
-              <li><Link to="/contact" className="hover:text-primary">Contact</Link></li>
+              <li><a href="#" className="hover:text-primary">About Us</a></li>
               <li><a href="#" className="hover:text-primary">Terms of Service</a></li>
               <li><a href="#" className="hover:text-primary">Privacy Policy</a></li>
             </ul>

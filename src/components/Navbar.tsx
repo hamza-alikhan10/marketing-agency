@@ -10,13 +10,8 @@ const Navbar = () => {
   const location = useLocation();
 
   const navigation = [
-    { name: "Home", href: "/" },
+    { name: "Dashboard", href: "/" },
     { name: "How It Works", href: "/how-it-works" },
-    { name: "About", href: "/about" },
-    { name: "Plans", href: "/plans" },
-    { name: "Security", href: "/security" },
-    { name: "FAQ", href: "/faq" },
-    { name: "Contact", href: "/contact" },
   ];
 
   return (

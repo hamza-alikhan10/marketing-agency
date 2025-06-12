@@ -11,21 +11,21 @@ const HowItWorks = () => {
       step: 1,
       icon: Wallet,
       title: "Deposit USDT",
-      description: "Connect your wallet and deposit USDT to your RobinHood account. Minimum deposit starts at $100 USDT.",
+      description: "Connect your wallet and deposit USDT to your RobinHood account. Your USDT is converted to RH Coin for liquidity provision.",
       details: ["Secure wallet integration", "Instant deposit confirmation", "No hidden fees"]
     },
     {
       step: 2,
       icon: PieChart,
-      title: "We Allocate to Liquid Crypto Assets",
-      description: "Our expert team allocates your funds into high-liquidity crypto coins and DeFi strategies.",
-      details: ["Diversified portfolio", "Risk management", "Real-time monitoring"]
+      title: "Provide Liquidity to RH Coin",
+      description: "Your funds are paired with RH Coin in high-liquidity pools on decentralized exchanges.",
+      details: ["Secure pools", "Real-time monitoring", "Optimized pair strategies"]
     },
     {
       step: 3,
       icon: TrendingUp,
-      title: "Earn 1% Daily Returns",
-      description: "Your investment generates consistent 1% daily returns through our proven strategies.",
+      title: "Earn Up to 1% Daily Yields",
+      description: "Earn yields from transaction fees and pool rewards, compounded daily.",
       details: ["Daily compounding", "Transparent reporting", "Automated calculations"]
     },
     {
@@ -38,10 +38,9 @@ const HowItWorks = () => {
   ];
 
   const flowData = [
-    { label: "Your USDT Deposit", percentage: "100%", color: "bg-blue-500" },
-    { label: "High-Liquidity Crypto", percentage: "60%", color: "bg-green-500" },
-    { label: "DeFi Yield Farming", percentage: "25%", color: "bg-purple-500" },
-    { label: "Liquidity Pools", percentage: "15%", color: "bg-yellow-500" }
+    { label: "RH Coin Liquidity Pools", percentage: "80%", color: "bg-blue-500" },
+    { label: "DeFi Yield Farming (RH Coin-based)", percentage: "15%", color: "bg-green-500" },
+    { label: "Stablecoin Reserves", percentage: "5%", color: "bg-purple-500" }
   ];
 
   return (
@@ -52,10 +51,10 @@ const HowItWorks = () => {
           <Badge variant="secondary" className="mb-4">How It Works</Badge>
           <h1 className="text-4xl md:text-5xl font-bold mb-6">
             Simple Steps to
-            <span className="bg-gradient-to-r from-green-500 to-blue-500 bg-clip-text text-transparent"> Consistent Returns</span>
+            <span className="bg-gradient-to-r from-green-500 to-blue-500 bg-clip-text text-transparent"> Liquidity Yields</span>
           </h1>
           <p className="text-xl text-muted-foreground mb-8">
-            Understand how our platform generates 1% daily returns through expert crypto asset allocation.
+            Understand how our platform generates up to 1% daily yields through RH Coin liquidity provision.
           </p>
         </div>
       </section>
@@ -96,9 +95,9 @@ const HowItWorks = () => {
       <section className="px-4 sm:px-6 lg:px-8 py-16 bg-muted/50">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4">Fund Allocation Strategy</h2>
+            <h2 className="text-3xl font-bold mb-4">RH Coin Allocation Strategy</h2>
             <p className="text-muted-foreground">
-              See how your USDT deposits are strategically allocated across liquid crypto assets.
+              See how your USDT deposits are strategically allocated to RH Coin liquidity pools.
             </p>
           </div>
           
@@ -132,21 +131,21 @@ const HowItWorks = () => {
                   <div className="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
                   <div>
                     <h4 className="font-semibold">Diversified Risk</h4>
-                    <p className="text-sm text-muted-foreground">Spread across multiple liquid assets to minimize risk.</p>
+                    <p className="text-sm text-muted-foreground">Focused on RH Coin pools with stablecoin pairing to reduce volatility.</p>
                   </div>
                 </div>
                 <div className="flex items-start space-x-3">
                   <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
                   <div>
                     <h4 className="font-semibold">High Liquidity</h4>
-                    <p className="text-sm text-muted-foreground">All assets maintain high liquidity for instant withdrawals.</p>
+                    <p className="text-sm text-muted-foreground">RH Coin pools ensure fast withdrawals and low slippage.</p>
                   </div>
                 </div>
                 <div className="flex items-start space-x-3">
                   <div className="w-2 h-2 bg-purple-500 rounded-full mt-2"></div>
                   <div>
                     <h4 className="font-semibold">Expert Management</h4>
-                    <p className="text-sm text-muted-foreground">Professional team monitors and adjusts allocations daily.</p>
+                    <p className="text-sm text-muted-foreground">Our team optimizes pool performance and monitors market conditions.</p>
                   </div>
                 </div>
               </CardContent>
@@ -160,9 +159,9 @@ const HowItWorks = () => {
         <div className="max-w-4xl mx-auto">
           <Card className="bg-gradient-to-r from-green-500/10 to-blue-500/10 border-green-500/20">
             <CardHeader className="text-center">
-              <CardTitle className="text-2xl">How We Generate 1% Daily Returns</CardTitle>
+              <CardTitle className="text-2xl">How We Generate Up to 1% Daily Yields</CardTitle>
               <CardDescription>
-                Our multi-strategy approach to consistent profit generation
+                Our focused approach to RH Coin liquidity provision
               </CardDescription>
             </CardHeader>
             <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -170,9 +169,9 @@ const HowItWorks = () => {
                 <div className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
                   <TrendingUp className="w-6 h-6 text-white" />
                 </div>
-                <h3 className="font-semibold mb-2">Arbitrage Trading</h3>
+                <h3 className="font-semibold mb-2">Liquidity Provision</h3>
                 <p className="text-sm text-muted-foreground">
-                  Profit from price differences across multiple exchanges
+                  Earn fees from RH Coin trading activity in pools
                 </p>
               </div>
               <div className="text-center">
@@ -181,16 +180,16 @@ const HowItWorks = () => {
                 </div>
                 <h3 className="font-semibold mb-2">Yield Farming</h3>
                 <p className="text-sm text-muted-foreground">
-                  Earn yields from DeFi protocols and liquidity provision
+                  Stake RH Coin in DeFi protocols for additional rewards
                 </p>
               </div>
               <div className="text-center">
                 <div className="w-12 h-12 bg-purple-500 rounded-full flex items-center justify-center mx-auto mb-4">
                   <RefreshCw className="w-6 h-6 text-white" />
                 </div>
-                <h3 className="font-semibold mb-2">Market Making</h3>
+                <h3 className="font-semibold mb-2">Pool Optimization</h3>
                 <p className="text-sm text-muted-foreground">
-                  Generate returns through automated market making strategies
+                  Automated strategies maximize yield efficiency
                 </p>
               </div>
             </CardContent>
@@ -203,17 +202,17 @@ const HowItWorks = () => {
         <div className="max-w-4xl mx-auto text-center text-white">
           <h2 className="text-3xl font-bold mb-4">Ready to Get Started?</h2>
           <p className="text-xl mb-8 opacity-90">
-            Join thousands of investors earning 1% daily returns with our proven strategy.
+            Start Providing Liquidity Today and earn yields from RH Coin pools.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button size="lg" variant="secondary" asChild>
-              <Link to="/plans">
-                View Investment Plans
+              <Link to="/">
+                Start Providing Liquidity
                 <ArrowRight className="w-4 h-4 ml-2" />
               </Link>
             </Button>
             <Button size="lg" variant="outline" className="text-white border-white hover:bg-white hover:text-green-500" asChild>
-              <Link to="/security">Learn About Security</Link>
+              <Link to="/">Learn More</Link>
             </Button>
           </div>
         </div>
