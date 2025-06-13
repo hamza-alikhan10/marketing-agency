@@ -102,7 +102,7 @@ const HowItWorks = () => {
           </div>
           <h1 className="text-4xl md:text-5xl font-bold mb-4">
             Maximize Your USDT with <br />
-            <span className="bg-gradient-to-r from-green-500 to-blue-500 bg-clip-text text-transparent">LazrCoin Liquidity</span>
+            <span className="bg-gradient-to-r from-green-500 to-blue-500 bg-clip-text text-transparent">LazrCoin </span>
           </h1>
           <p className="text-lg text-muted-foreground mb-8">
             Don’t let your USDT sit idle—earn up to 1% daily yields by providing liquidity to RH Coin pools.
