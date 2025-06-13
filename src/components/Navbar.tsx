@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -24,9 +23,9 @@ const Navbar = () => {
         <div className="flex justify-between items-center h-16">
           <Link to="/" className="flex items-center space-x-2">
             <div className="w-8 h-8 bg-gradient-to-r from-green-400 to-blue-500 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-lg">R</span>
+              <span className="text-white font-bold text-lg">L</span>
             </div>
-            <span className="text-xl font-bold text-foreground">RobinHood</span>
+            <span className="text-xl font-bold text-foreground">LazrChain</span>
           </Link>
 
           {/* Desktop Navigation */}

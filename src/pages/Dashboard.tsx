@@ -1,11 +1,15 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { ArrowRight, Users, Coins, RefreshCw, DollarSign, TrendingUp, Gift, Star, LogOut, Wallet, Copy, UserPlus, Menu, X } from "lucide-react";
+import { ArrowRight, Users, Coins, DollarSign, TrendingUp, Gift, Star, Wallet, Copy, UserPlus, Menu, X, Edit, LogOut } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { Line } from "react-chartjs-2";
+import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from "chart.js";
+
+ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
 // Extend Window interface to include ethereum
 interface Window {
@@ -29,6 +33,8 @@ const Dashboard = () => {
   const [isSignup, setIsSignup] = useState(false);
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [newPassword, setNewPassword] = useState("");
   const { toast } = useToast();
 
   const pastEarnings = [
@@ -51,6 +57,49 @@ const Dashboard = () => {
     { type: "Referral Bonus", amount: 5.0, claimed: false },
     { type: "Weekly Activity", amount: 3.0, claimed: false },
   ];
+
+  // Chart data for earnings graph
+  const chartData = {
+    labels: pastEarnings.map((e) => e.date),
+    datasets: [
+      {
+        label: "RH Coin Earnings",
+        data: pastEarnings.map((e) => e.amount),
+        borderColor: "#10B981",
+        backgroundColor: "rgba(16, 185, 129, 0.2)",
+        fill: true,
+        tension: 0.4,
+      },
+    ],
+  };
+
+  const chartOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        display: true,
+        position: "top" as const,
+        labels: { color: "#374151", font: { size: 12 } },
+      },
+      tooltip: { enabled: true },
+    },
+    scales: {
+      x: { grid: { display: false }, ticks: { color: "#374151" } },
+      y: {
+        grid: { color: "#E5E7EB" },
+        ticks: { color: "#374151", beginAtZero: true },
+      },
+    },
+  };
+
+  useEffect(() => {
+    const usage = parseFloat(networkUsage);
+    if (usage > 0) {
+      const earnings = usage * 0.01;
+      setTodayEarnings(earnings);
+    }
+  }, [networkUsage]);
 
   const connectWallet = async () => {
     try {
@@ -129,6 +178,7 @@ const Dashboard = () => {
     setPassword("");
     setConfirmPassword("");
     setIsSidebarOpen(false);
+    setIsProfileOpen(false);
     toast({
       title: "Logged Out",
       description: "You have been successfully logged out.",
@@ -195,22 +245,16 @@ const Dashboard = () => {
     }
   };
 
-  const handleRefreshEarnings = () => {
-    const usage = parseFloat(networkUsage);
-    if (usage > 0) {
-      const earnings = usage * 0.01;
-      setTodayEarnings(earnings);
+  const handleProfileUpdate = () => {
+    if (newPassword) {
+      setPassword(newPassword);
+      setNewPassword("");
       toast({
-        title: "Earnings Updated",
-        description: `Today's earnings: ${earnings.toFixed(2)} RH Coin`,
-      });
-    } else {
-      toast({
-        variant: "destructive",
-        title: "Invalid Usage",
-        description: "Please enter valid network usage in MB.",
+        title: "Profile Updated",
+        description: "Password successfully updated.",
       });
     }
+    setIsProfileOpen(false);
   };
 
   const claimReward = (index: number) => {
@@ -283,7 +327,7 @@ const Dashboard = () => {
         }`}
       >
         <div className="p-4 border-b bg-gradient-to-r from-green-500 to-blue-500">
-          <div className="flex items-center justify-between">
+          <div className="w-full flex items-center justify-between">
             <div className="flex items-center space-x-2">
               <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
                 <span className="text-green-500 font-bold text-lg">R</span>
@@ -319,13 +363,6 @@ const Dashboard = () => {
             ))}
           </div>
         </nav>
-
-        <div className="p-2 border-t">
-          <Button onClick={handleLogout} variant="outline" className="w-full flex items-center space-x-2 text-sm hover:bg-red-50 hover:border-red-300 hover:text-red-600 transition-colors">
-            <LogOut className="w-4 h-4" />
-            <span className="truncate">Logout</span>
-          </Button>
-        </div>
       </div>
 
       {/* Backdrop for mobile */}
@@ -352,12 +389,18 @@ const Dashboard = () => {
             </div>
             <div className="flex items-center space-x-3">
               {!isWalletConnected && (
-                <Button onClick={connectWallet} className="bg-blue-500 hover:bg-blue-600 text-white text-sm">
+                <Button
+                  onClick={connectWallet}
+                  className="bg-blue-600 hover:bg-blue-700 text-white text-sm px-3 py-2 sm:px-4 sm:py-2 md:px-6 md:py-3 w-full sm:w-auto max-w-[200px] truncate"
+                >
                   <Wallet className="w-4 h-4 mr-2" />
-                  Connect Wallet
+                  <span className="truncate">Connect Wallet</span>
                 </Button>
               )}
-              <div className="flex items-center space-x-2 p-2 hover:bg-gray-100 rounded-lg transition-colors cursor-pointer">
+              <div
+                className="flex items-center space-x-2 p-2 hover:bg-gray-100 rounded-lg transition-colors cursor-pointer"
+                onClick={() => setIsProfileOpen(true)}
+              >
                 <div className="w-8 h-8 bg-gradient-to-r from-green-400 to-blue-500 rounded-full flex items-center justify-center">
                   <span className="text-white font-medium text-sm">U</span>
                 </div>
@@ -366,6 +409,64 @@ const Dashboard = () => {
             </div>
           </div>
         </div>
+
+        {/* Profile Modal */}
+        {isProfileOpen && (
+          <div className="fixed inset-0 bg-black/50 z-20 flex items-center justify-center p-4">
+            <Card className="w-full max-w-md bg-white">
+              <CardHeader>
+                <CardTitle className="flex items-center text-base">
+                  <Edit className="w-4 h-4 mr-2" />
+                  Edit Profile
+                </CardTitle>
+                <CardDescription className="text-sm">Update your account details</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div>
+                  <label className="text-sm font-medium text-gray-600">Email</label>
+                  <Input value={userEmail} disabled className="text-sm" />
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-600">Wallet Address</label>
+                  <Input value={walletAddress || "Not connected"} disabled className="text-sm" />
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-600">New Password</label>
+                  <Input
+                    type="password"
+                    placeholder="Enter new password"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    className="text-sm"
+                  />
+                </div>
+                <div className="flex space-x-2">
+                  <Button
+                    onClick={handleProfileUpdate}
+                    className="flex-1 bg-green-500 hover:bg-green-600 text-white text-sm"
+                  >
+                    Save Changes
+                  </Button>
+                  <Button
+                    onClick={() => setIsProfileOpen(false)}
+                    variant="outline"
+                    className="flex-1 text-sm"
+                  >
+                    Cancel
+                  </Button>
+                </div>
+                <Button
+                  onClick={handleLogout}
+                  variant="outline"
+                  className="w-full border-red-300 text-red-600  hover:border-red-400 text-sm"
+                >
+                  <LogOut className="w-4 h-4 mr-2" />
+                  Logout
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+        )}
 
         <div className="p-4">
           {activeTab === "dashboard" && (
@@ -403,7 +504,11 @@ const Dashboard = () => {
                       </div>
                       <div className="space-y-2">
                         <Input type="number" placeholder="Amount to withdraw" value={withdrawAmount} onChange={(e) => setWithdrawAmount(e.target.value)} className="border-blue-200 focus:border-blue-500 text-sm" />
-                        <Button onClick={handleWithdraw} variant="outline" className="w-full border-blue-500 text-blue-600 hover:bg-blue-50 text-sm">
+                        <Button
+                          onClick={handleWithdraw}
+                          variant="outline"
+                          className="w-full border-blue-500 text-blue-600 hover:bg-blue-100 hover:border-blue-600 hover:text-blue-700 text-sm"
+                        >
                           Withdraw USDT
                         </Button>
                       </div>
@@ -417,19 +522,26 @@ const Dashboard = () => {
                       <TrendingUp className="w-4 h-4 mr-2" />
                       Earnings Today
                     </CardTitle>
-                    <CardDescription className="text-blue-100 text-sm">Track your RH Coin earnings from network usage</CardDescription>
+                    <CardDescription className="text-blue-100 text-sm">Network usage and USDT earned</CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4 p-4">
-                    <div className="text-2xl font-bold text-gray-900 text-center">
-                      {todayEarnings.toFixed(2)} <span className="text-base text-gray-500">RH Coin</span>
+                    <div className="grid grid-cols-2 gap-2">
+                      <div className="text-center">
+                        <div className="text-xl font-bold text-gray-900">{networkUsage || "0"} <span className="text-sm text-gray-500">MB</span></div>
+                        <div className="text-xs text-gray-600">Network Usage</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="text-xl font-bold text-gray-900">{todayEarnings.toFixed(2)} <span className="text-sm text-gray-500">RH Coin</span></div>
+                        <div className="text-xs text-gray-600">USDT Earned</div>
+                      </div>
                     </div>
-                    <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
-                      <Input type="number" placeholder="Network usage (MB)" value={networkUsage} onChange={(e) => setNetworkUsage(e.target.value)} className="flex-1 border-purple-200 focus:border-purple-500 text-sm" />
-                      <Button onClick={handleRefreshEarnings} className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white text-sm">
-                        <RefreshCw className="w-4 h-4 mr-2" />
-                        Refresh
-                      </Button>
-                    </div>
+                    <Input
+                      type="number"
+                      placeholder="Network usage (MB)"
+                      value={networkUsage}
+                      onChange={(e) => setNetworkUsage(e.target.value)}
+                      className="border-purple-200 focus:border-purple-500 text-sm"
+                    />
                     <p className="text-xs text-gray-600 text-center bg-gray-50 p-2 rounded">Rate: 0.01 RH Coin per MB of network usage</p>
                   </CardContent>
                 </Card>
@@ -444,12 +556,8 @@ const Dashboard = () => {
                   <CardDescription className="text-sm">Visual representation of your earnings over time</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="h-48 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg flex items-center justify-center">
-                    <div className="text-center text-gray-500">
-                      <TrendingUp className="w-10 h-10 mx-auto mb-2" />
-                      <p className="font-medium text-sm">Earnings Graph</p>
-                      <p className="text-xs">Chart will show your daily earnings trends</p>
-                    </div>
+                  <div className="h-48">
+                    <Line data={chartData} options={chartOptions} />
                   </div>
                 </CardContent>
               </Card>
