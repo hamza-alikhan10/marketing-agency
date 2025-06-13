@@ -104,11 +104,8 @@ const HowItWorks = () => {
             Maximize Your USDT with <br />
             <span className="bg-gradient-to-r from-green-500 to-blue-500 bg-clip-text text-transparent">LazrCoin Liquidity</span>
           </h1>
-          <p className="text-lg text-muted-foreground ">
-           Don’t let companies use your internet bandwidth without paying you
-          </p>
-           <p className="text-lg text-muted-foreground mb-8">
-          Get rewarded by contributing to LazrCoin pools.
+          <p className="text-lg text-muted-foreground mb-8">
+            Don’t let your USDT sit idle—earn up to 1% daily yields by providing liquidity to RH Coin pools.
           </p>
           <Link to="/dashboard">
             <Button size="lg" className="bg-black text-white hover:bg-gray-800 rounded-full px-6">
@@ -191,211 +188,33 @@ const HowItWorks = () => {
       </section>
 
       {/* Steps Section */}
-      <section className="px-4 sm:px-6 lg:px-8 py-16 bg-muted/50">
+      <section className="px-4 sm:px-6 lg:px-8 py-16">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4">Start Earning in 3 Steps</h2>
-            <p className="text-muted-foreground">Get started with LazrChain and begin earning yields today</p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <Card className="relative">
-              <CardHeader className="text-center">
-                <div className="w-16 h-16 bg-gradient-to-r from-green-500 to-blue-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <span className="text-white font-bold text-2xl">1</span>
-                </div>
-                <CardTitle className="text-lg">Create Account</CardTitle>
-                <CardDescription>Connect your wallet to your LazrChain account</CardDescription>
-              </CardHeader>
-            </Card>
-            <Card className="relative">
-              <CardHeader className="text-center">
-                <div className="w-16 h-16 bg-gradient-to-r from-green-500 to-blue-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <span className="text-white font-bold text-2xl">2</span>
-                </div>
-                <CardTitle className="text-lg">Deposit USDT</CardTitle>
-                <CardDescription>Add your USDT to start providing liquidity</CardDescription>
-              </CardHeader>
-            </Card>
-            <Card className="relative">
-              <CardHeader className="text-center">
-                <div className="w-16 h-16 bg-gradient-to-r from-green-500 to-blue-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <span className="text-white font-bold text-2xl">3</span>
-                </div>
-                <CardTitle className="text-lg">Earn</CardTitle>
-                <CardDescription>Watch your yields compound daily automatically</CardDescription>
-              </CardHeader>
-            </Card>
-          </div>
-        </div>
-      </section>
-
-      {/* How Your Funds Are Protected */}
-      <section className="px-4 sm:px-6 lg:px-8 py-16">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4">How Your Funds Are Protected</h2>
-            <p className="text-muted-foreground">
-              Your security is our top priority when providing liquidity to LazrCoin pools.
-            </p>
-          </div>
-          
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <div className="space-y-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Fund Security</CardTitle>
-                  <CardDescription>Protected Fund Management</CardDescription>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {steps.map((step, index) => (
+              <Card key={index} className="relative">
+                <CardHeader className="text-center">
+                  <div className="w-16 h-16 bg-gradient-to-r from-green-500 to-blue-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <step.icon className="w-8 h-8 text-white" />
+                  </div>
+                  <div className="absolute top-4 right-4">
+                    <Badge variant="outline">{step.step}</Badge>
+                  </div>
+                  <CardTitle className="text-lg">{step.title}</CardTitle>
+                  <CardDescription>{step.description}</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-sm text-muted-foreground">
-                    Our philosophy is to protect your funds from unauthorized access. 
-                    All liquidity pools are audited smart contracts with transparent operations.
-                  </p>
+                  <ul className="space-y-2">
+                    {step.details.map((detail, i) => (
+                      <li key={i} className="flex items-center text-sm text-muted-foreground">
+                        <div className="w-1.5 h-1.5 bg-green-500 rounded-full mr-3"></div>
+                        {detail}
+                      </li>
+                    ))}
+                  </ul>
                 </CardContent>
               </Card>
-              
-              <Card>
-                <CardHeader>
-                  <CardTitle>Private Keys</CardTitle>
-                  <CardDescription>You Always Maintain Control</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground">
-                    LazrChain never has access to your private keys. Your wallet remains under your complete control,
-                    and you can withdraw your funds at any time.
-                  </p>
-                </CardContent>
-              </Card>
-            </div>
-            
-            <Card>
-              <CardHeader>
-                <CardTitle>Why This Strategy Works</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-start space-x-3">
-                  <div className="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
-                  <div>
-                    <h4 className="font-semibold">Audited Smart Contracts</h4>
-                    <p className="text-sm text-muted-foreground">All LazrCoin pools use battle-tested, audited smart contracts for maximum security.</p>
-                  </div>
-                </div>
-                <div className="flex items-start space-x-3">
-                  <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
-                  <div>
-                    <h4 className="font-semibold">Insurance Coverage</h4>
-                    <p className="text-sm text-muted-foreground">Additional insurance coverage protects against smart contract risks.</p>
-                  </div>
-                </div>
-                <div className="flex items-start space-x-3">
-                  <div className="w-2 h-2 bg-purple-500 rounded-full mt-2"></div>
-                  <div>
-                    <h4 className="font-semibold">24/7 Monitoring</h4>
-                    <p className="text-sm text-muted-foreground">Our team monitors all pools round-the-clock for optimal performance and security.</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </section>
-
-      {/* Referral Program */}
-      <section className="px-4 sm:px-6 lg:px-8 py-16 bg-muted/50">
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-3xl font-bold mb-4">Boost Your Rewards with Our Referral Program</h2>
-          <p className="text-lg text-muted-foreground mb-8">
-            Invite friends to join LazrChain & grow your earnings together.
-          </p>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-2xl text-green-500">10%</CardTitle>
-                <CardDescription>Commission on all referral earnings</CardDescription>
-              </CardHeader>
-            </Card>
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-2xl text-blue-500">Unlimited</CardTitle>
-                <CardDescription>Number of friends you can refer</CardDescription>
-              </CardHeader>
-            </Card>
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-2xl text-purple-500">Lifetime</CardTitle>
-                <CardDescription>Duration of referral rewards</CardDescription>
-              </CardHeader>
-            </Card>
-          </div>
-        </div>
-      </section>
-
-      {/* Frequently Asked Questions */}
-      <section className="px-4 sm:px-6 lg:px-8 py-16">
-        <div className="max-w-4xl mx-auto">
-          <h2 className="text-3xl font-bold mb-6 text-center">Frequently Asked Questions</h2>
-          <div className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>What is LazrChain?</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground">
-                  LazrChain is a platform where millions of users provide liquidity to LazrCoin pools to earn daily yields from their idle USDT. Your participation in LazrChain represents your contribution to building a more equitable DeFi ecosystem and provides you with the opportunity to earn passive income. Since you already hold USDT, why not put your idle funds to work?
-                </p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader>
-                <CardTitle>How does LazrChain work?</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground">
-                  With just three clicks, LazrChain lets you start providing liquidity with your USDT. Your funds are paired with LazrCoin in high-yield liquidity pools on decentralized exchanges. Your contributions earn you daily rewards from transaction fees and pool incentives, tracked transparently on the blockchain. LazrChain makes DeFi a place where everyone benefits—protocols get liquidity, and you earn passive income.
-                </p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader>
-                <CardTitle>What are LazrCoin Points?</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground">
-                  LazrCoin Points are a representation of your contribution to LazrChain’s liquidity pools. These points track your participation and are used to determine your eligibility for LazrCoin Tokens, based on factors like the amount of USDT deposited and the duration of your liquidity provision.
-                </p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader>
-                <CardTitle>What are LazrCoin Tokens?</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground">
-                  LazrCoin Tokens are the native tokens of the LazrChain ecosystem. They are awarded to users who provide liquidity to LazrCoin pools, offering additional rewards and potential governance rights within the platform.
-                </p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader>
-                <CardTitle>When and How are LazrCoin Tokens Awarded?</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground">
-                  LazrCoin Tokens are awarded periodically based on your accumulated LazrCoin Points. The exact distribution schedule depends on the platform’s tokenomics, but rewards are typically distributed monthly or during specific reward cycles. You can track your points and token eligibility in your LazrChain dashboard.
-                </p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader>
-                <CardTitle>Who can receive LazrCoin Tokens?</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground">
-                  Anyone who provides liquidity to LazrCoin pools through the LazrChain platform is eligible to receive LazrCoin Tokens. To participate, you must connect a compatible wallet, deposit USDT, and maintain active liquidity provision. Token allocation depends on your LazrCoin Points and other factors like pool performance.
-                </p>
-              </CardContent>
-            </Card>
+            ))}
           </div>
         </div>
       </section>
@@ -470,7 +289,7 @@ const HowItWorks = () => {
         <div className="max-w-4xl mx-auto text-center text-white">
           <h2 className="text-3xl font-bold mb-4">Ready to Get Started?</h2>
           <p className="text-xl mb-8 opacity-90">
-            Start providing liquidity today and earn yields from LazrCoin pools.
+            Start Providing Liquidity Today and earn yields from RH Coin pools.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button size="lg" variant="secondary" asChild>
