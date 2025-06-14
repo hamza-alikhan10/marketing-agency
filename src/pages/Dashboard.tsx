@@ -426,71 +426,79 @@ const Dashboard = () => {
         </div>
 
         {/* Profile Modal */}
-        {isProfileOpen && (
-          <div className="fixed inset-0 bg-black/50 dark:bg-black/70 z-20 flex items-center justify-center p-4">
-            <Card className="w-full max-w-md bg-white dark:bg-gray-800 border-green-200 dark:border-green-700 shadow-2xl">
-              <CardHeader className="relative">
-                <CardTitle className="flex items-center text-lg text-gray-900 dark:text-white">
-                  <Edit className="w-5 h-5 mr-2 text-green-500 dark:text-green-400" />
-                  Edit Profile
-                </CardTitle>
-                <CardDescription className="text-sm text-gray-500 dark:text-gray-400">Update your account details</CardDescription>
-                <Button
-                  variant="ghost"
-                  className="absolute top-2 right-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
-                  onClick={() => setIsProfileOpen(false)}
-                >
-                  <X className="w-5 h-5" />
-                </Button>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div>
-                  <label className="text-sm font-medium text-gray-700 dark:text-gray-200 mb-1 block">Email</label>
-                  <Input
-                    type="email"
-                    placeholder="Enter new email"
-                    value={newEmail}
-                    onChange={(e) => setNewEmail(e.target.value)}
-                    className="border-gray-300 dark:border-gray-600 focus:border-green-500 dark:focus:border-green-400 text-sm bg-white/50 dark:bg-gray-700/50 text-gray-900 dark:text-gray-200"
-                  />
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-gray-700 dark:text-gray-200 mb-1 block">New Password</label>
-                  <Input
-                    type="password"
-                    placeholder="Enter new password (min 8 characters)"
-                    value={newPassword}
-                    onChange={(e) => setNewPassword(e.target.value)}
-                    className="border-gray-300 dark:border-gray-600 focus:border-green-500 dark:focus:border-green-400 text-sm bg-white/50 dark:bg-gray-700/50 text-gray-900 dark:text-gray-200"
-                  />
-                </div>
-                <div className="flex space-x-3">
-                  <Button
-                    onClick={handleProfileUpdate}
-                    className="flex-1 bg-gradient-to-r from-green-500 to-blue-500 dark:from-green-600 dark:to-blue-600 hover:from-green-600 hover:to-blue-600 dark:hover:from-green-700 dark:hover:to-blue-700 text-white text-sm py-2"
-                  >
-                    Save Changes
-                  </Button>
-                  <Button
-                    onClick={() => setIsProfileOpen(false)}
-                    variant="outline"
-                    className="flex-1 border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 text-sm py-2"
-                  >
-                    Cancel
-                  </Button>
-                </div>
-                <Button
-                  onClick={handleLogout}
-                  variant="outline"
-                  className="w-full border-red-300 dark:border-red-600 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 hover:border-red-400 dark:hover:border-red-500 text-sm py-2"
-                >
-                  <LogOut className="w-4 h-4 mr-2" />
-                  Logout
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
-        )}
+{isProfileOpen && (
+  <div className="fixed inset-0 bg-black/50 dark:bg-black/70 z-20 flex items-center justify-center p-4">
+    <Card className="w-full max-w-md bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 shadow-lg">
+      <CardHeader className="relative">
+        <CardTitle className="flex items-center text-lg text-gray-900 dark:text-white">
+          <Edit className="w-5 h-5 mr-2 text-green-500 dark:text-green-400" />
+          Edit Profile
+        </CardTitle>
+        <CardDescription className="text-sm text-gray-500 dark:text-gray-400">Update your password</CardDescription>
+        <Button
+          variant="ghost"
+          className="absolute top-2 right-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
+          onClick={() => setIsProfileOpen(false)}
+        >
+          <X className="w-5 h-5" />
+        </Button>
+      </CardHeader>
+      <CardContent className="space-y-6">
+        <div>
+          <label className="text-sm font-medium text-gray-700 dark:text-gray-200 mb-1 block">Email</label>
+          <Input
+            type="email"
+            value={userEmail}
+            disabled
+            className="bg-gray-100 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-500 dark:text-gray-400 text-sm cursor-not-allowed"
+          />
+        </div>
+        <div>
+          <label className="text-sm font-medium text-gray-700 dark:text-gray-200 mb-1 block">Wallet Address</label>
+          <Input
+            type="text"
+            value={bep20Address}
+            disabled
+            className="bg-gray-100 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-500 dark:text-gray-400 text-sm cursor-not-allowed"
+          />
+        </div>
+        <div>
+          <label className="text-sm font-medium text-gray-700 dark:text-gray-200 mb-1 block">New Password</label>
+          <Input
+            type="password"
+            placeholder="Enter new password (min 8 characters)"
+            value={newPassword}
+            onChange={(e) => setNewPassword(e.target.value)}
+            className="border-gray-300 dark:border-gray-600 focus:border-green-500 dark:focus:border-green-400 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200"
+          />
+        </div>
+        <div className="flex space-x-3">
+          <Button
+            onClick={handleProfileUpdate}
+            className="flex-1 bg-gradient-to-r from-green-500 to-blue-500 dark:from-green-600 dark:to-blue-600 hover:from-green-600 hover:to-blue-600 dark:hover:from-green-700 dark:hover:to-blue-700 text-white text-sm py-2"
+          >
+            Save Changes
+          </Button>
+          <Button
+            onClick={() => setIsProfileOpen(false)}
+            variant="outline"
+            className="flex-1 border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 text-sm py-2"
+          >
+            Cancel
+          </Button>
+        </div>
+        <Button
+          onClick={handleLogout}
+          variant="outline"
+          className="w-full border-red-300 dark:border-red-600 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 hover:border-red-400 dark:hover:border-red-500 text-sm py-2"
+        >
+          <LogOut className="w-4 h-4 mr-2" />
+          Logout
+        </Button>
+      </CardContent>
+    </Card>
+  </div>
+)}
 
         {/* Deposit Modal */}
         {isDepositOpen && (
