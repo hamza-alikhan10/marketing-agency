@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -39,7 +38,7 @@ const Contact = () => {
       icon: Mail,
       title: "Email Support",
       description: "Get detailed responses to complex questions",
-      contact: "support@robinhood-crypto.com",
+      contact: "support@lazrchain.app",
       response: "Within 6 hours",
       color: "text-green-500"
     },
@@ -55,7 +54,7 @@ const Contact = () => {
       icon: Phone,
       title: "Phone Support",
       description: "Enterprise clients and VIP support",
-      contact: "+1 (555) 123-4567",
+      contact: "+1 (555) 987-6543",
       response: "Business hours",
       color: "text-purple-500"
     }
@@ -66,25 +65,25 @@ const Contact = () => {
       name: "Telegram",
       members: "12.5K",
       description: "Official announcements and community discussions",
-      link: "https://t.me/robinhood_crypto"
+      link: "https://t.me/lazrchain"
     },
     {
       name: "Discord",
       members: "8.2K",
       description: "Real-time chat with the community and team",
-      link: "https://discord.gg/robinhood"
+      link: "https://discord.gg/lazrchain"
     },
     {
       name: "Twitter",
       members: "25K",
       description: "Latest updates and market insights",
-      link: "https://twitter.com/robinhood_crypto"
+      link: "https://twitter.com/lazrchain"
     },
     {
       name: "Medium",
       members: "5.1K",
       description: "In-depth articles and platform updates",
-      link: "https://medium.com/@robinhood_crypto"
+      link: "https://medium.com/@lazrchain"
     }
   ];
 
@@ -106,7 +105,7 @@ const Contact = () => {
           </Badge>
           <h1 className="text-4xl md:text-5xl font-bold mb-6">
             Get in Touch with
-            <span className="bg-gradient-to-r from-green-500 to-blue-500 bg-clip-text text-transparent"> Our Team</span>
+            <span className="bg-gradient-to-r from-green-500 to-blue-500 bg-clip-text text-transparent"> LazrChain</span>
           </h1>
           <p className="text-xl text-muted-foreground mb-8">
             We're here to help 24/7. Whether you have questions about investments, 
@@ -252,17 +251,17 @@ const Contact = () => {
                 </CardHeader>
                 <CardContent className="space-y-3">
                   <div>
-                    <div className="font-medium">RobinHood Crypto Ltd.</div>
+                    <div className="font-medium">LazrChain Technologies Inc.</div>
                     <div className="text-muted-foreground">
-                      123 Blockchain Avenue<br />
-                      Crypto City, CC 12345<br />
+                      456 Tech Hub Road<br />
+                      Innovation City, IC 67890<br />
                       United States
                     </div>
                   </div>
                   <div className="pt-3 border-t">
                     <div className="text-sm text-muted-foreground">
-                      <strong>Business Registration:</strong> CC-2024-001234<br />
-                      <strong>Tax ID:</strong> 12-3456789
+                      <strong>Business Registration:</strong> IC-2025-987654<br />
+                      <strong>Tax ID:</strong> 98-7654321
                     </div>
                   </div>
                 </CardContent>
@@ -318,7 +317,7 @@ const Contact = () => {
               Report Security Issue
             </Button>
             <Button variant="outline">
-              Emergency Hotline: +1 (555) 911-HELP
+              Emergency Hotline: +1 (555) 911-LAZR
             </Button>
           </div>
         </div>
