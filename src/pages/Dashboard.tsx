@@ -1,537 +1,75 @@
 import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import {
-  ArrowRight,
-  TrendingUp,
-  RefreshCw,
-  Coins,
-  DollarSign,
-  Users,
-  Gift,
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { 
+  TrendingUp, 
+  DollarSign, 
+  Users, 
+  Gift, 
+  Wallet,
   LogOut,
-  Copy,
   Menu,
-  X,
-  Edit,
-  Wifi,
-  UserPlus,
+  X 
 } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
-import { Line } from "react-chartjs-2";
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend,
-  ChartOptions,
-} from "chart.js";
-import { QRCodeSVG } from "qrcode.react";
-import ReferralProgram from "./ReferralProgram";
-import Rewards from "./Rewards";
-
-ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
-
-// Extend Window interface to include ethereum
-interface Window {
-  ethereum?: {
-    request: (args: { method: string }) => Promise<string[]>;
-  };
-}
+import WalletConnection from "@/components/WalletConnection";
+import DepositForm from "@/components/DepositForm";
+import ReferralSystem from "@/components/ReferralSystem";
+import RewardsClaim from "@/components/RewardsClaim";
 
 const Dashboard = () => {
-  const [usdtBalance, setUsdtBalance] = useState(0);
-  const [depositAmount, setDepositAmount] = useState("");
-  const [withdrawAmount, setWithdrawAmount] = useState("");
-  const [networkSpeed, setNetworkSpeed] = useState(0);
-  const [todayEarnings, setTodayEarnings] = useState(0);
-  const [referralEarnings, setReferralEarnings] = useState(0);
-  const [activeTab, setActiveTab] = useState("dashboard");
-  const [isWalletConnected, setIsWalletConnected] = useState(false);
-  const [walletAddress, setWalletAddress] = useState("");
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [userEmail, setUserEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [isSignup, setIsSignup] = useState(false);
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const [activeTab, setActiveTab] = useState("overview");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [isProfileOpen, setIsProfileOpen] = useState(false);
-  const [isDepositOpen, setIsDepositOpen] = useState(false);
-  const [oldPassword, setOldPassword] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [isSpeedTesting, setIsSpeedTesting] = useState(false);
-  const [lastRewardClaim, setLastRewardClaim] = useState(Date.now() - 24 * 60 * 60 * 1000); // 24 hours ago
-  const [pastEarnings, setPastEarnings] = useState([
-    { date: "2025-06-11", amount: 0 },
-    { date: "2025-06-12", amount: 0 },
-    { date: "2025-06-13", amount: 0 },
-    { date: "2025-06-14", amount: 0 },
-    { date: "2025-06-15", amount: 0 },
-  ]);
+  const { user, logout, updateNetworkSpeed } = useAuth();
   const { toast } = useToast();
 
-  const trc20Address = "T1234567890abcdef1234567890abcdef123456";
-
-  const investmentStrategy = [
-    { min: 10, max: 100, minYield: 0.5, maxYield: 2 },
-    { min: 100, max: 500, minYield: 2, maxYield: 4 },
-    { min: 500, max: 1500, minYield: 4, maxYield: 6 },
-  ];
-
-  const chartData = {
-    labels: pastEarnings.map((e) => e.date),
-    datasets: [
-      {
-        label: "USDT Earnings",
-        data: pastEarnings.map((e) => e.amount),
-        borderColor: "#10B981",
-        backgroundColor: "rgba(16, 185, 129, 0.1)",
-        fill: true,
-        tension: 0.4,
-        pointBackgroundColor: "#10B981",
-        pointBorderColor: "#ffffff",
-        pointBorderWidth: 2,
-        pointRadius: 5,
-      },
-    ],
-  };
-
-  const chartOptions: ChartOptions<"line"> = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        display: true,
-        position: "top" as const,
-        labels: {
-          color: "#374151",
-          font: {
-            size: 12,
-            weight: "bold" as const,
-          },
-        },
-      },
-      tooltip: {
-        enabled: true,
-        backgroundColor: "rgba(17, 24, 39, 0.9)",
-        titleColor: "#ffffff",
-        bodyColor: "#ffffff",
-        borderColor: "#10B981",
-        borderWidth: 1,
-      },
-    },
-    scales: {
-      x: {
-        grid: { display: false },
-        ticks: {
-          color: "#6B7280",
-          font: {
-            weight: "normal" as const,
-          },
-        },
-      },
-      y: {
-        grid: { color: "rgba(229, 231, 235, 0.5)" },
-        ticks: {
-          color: "#6B7280",
-          font: {
-            weight: "normal" as const,
-          },
-        },
-        min: 0,
-      },
-    },
-  };
-
-  // Real-time internet speed test with realistic speeds
-  const testInternetSpeed = async () => {
-    setIsSpeedTesting(true);
-    try {
-      const tests = [];
-      const test1 = new Promise(async (resolve) => {
-        try {
-          const startTime = performance.now();
-          const response = await fetch(`https://picsum.photos/200/200?random=${Date.now()}`, {
-            cache: "no-store",
-            mode: "cors",
-          });
-          await response.blob();
-          const endTime = performance.now();
-          const duration = (endTime - startTime) / 1000;
-          const sizeKB = 40;
-          const speedKbps = (sizeKB * 8) / duration;
-          const speedMbps = speedKbps / 1000;
-          resolve(Math.max(speedMbps, 0));
-        } catch {
-          resolve(0);
-        }
-      });
-      tests.push(test1);
-      const results = await Promise.all(tests);
-      const validResults = results.filter((speed) => speed > 0);
-      if (validResults.length > 0) {
-        const averageSpeed = validResults.reduce((sum, speed) => sum + speed, 0) / validResults.length;
-        const finalSpeed = Math.min(Math.max(averageSpeed * 2, 5), 50);
-        setNetworkSpeed(finalSpeed);
-      } else {
-        const fallbackSpeed = Math.random() * 30 + 10;
-        setNetworkSpeed(fallbackSpeed);
-      }
-    } catch (error) {
-      console.error("Speed test failed:", error);
-      const fallbackSpeed = Math.random() * 25 + 15;
-      setNetworkSpeed(fallbackSpeed);
-    } finally {
-      setIsSpeedTesting(false);
-    }
-  };
-
+  // Simulate network speed test
   useEffect(() => {
-    testInternetSpeed();
-  }, []);
-
-  const calculateDailyYield = (balance: number, speedMbps: number) => {
-    const tier = investmentStrategy.find((strategy) => balance >= strategy.min && balance <= strategy.max);
-    if (!tier || balance < 10 || speedMbps <= 0) return 0;
-
-    const maxSpeed = 100;
-    const yieldRange = tier.maxYield - tier.minYield;
-    const yieldPercentage = tier.minYield + (Math.min(speedMbps, maxSpeed) / maxSpeed) * yieldRange;
-    const yieldAmount = (balance * yieldPercentage) / 100;
-    return yieldAmount;
-  };
-
-  useEffect(() => {
-    if (usdtBalance >= 10 && networkSpeed > 0) {
-      const dailyYieldUsdt = calculateDailyYield(usdtBalance, networkSpeed);
-      setTodayEarnings(dailyYieldUsdt);
-
-      const today = new Date().toISOString().split("T")[0];
-      setPastEarnings((prev) => {
-        const updated = [...prev];
-        if (updated[0].date !== today) {
-          updated.unshift({ date: today, amount: dailyYieldUsdt });
-          updated.pop();
-        } else {
-          updated[0].amount = dailyYieldUsdt;
-        }
-        return updated;
-      });
-    } else {
-      setTodayEarnings(0);
-    }
-  }, [usdtBalance, networkSpeed]);
-
-  const connectWallet = async () => {
-    try {
-      if (typeof window.ethereum !== "undefined") {
-        const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
-        if (accounts.length > 0) {
-          setWalletAddress(accounts[0]);
-          setIsWalletConnected(true);
-          toast({
-            title: "Wallet Connected",
-            description: `Connected to ${accounts[0].substring(0, 6)}...${accounts[0].substring(38)}`,
-            duration: 3000,
-          });
-        }
-      } else {
-        toast({
-          variant: "destructive",
-          title: "Wallet Not Found",
-          description: "Please install MetaMask or another Web3 wallet.",
-          duration: 3000,
+    const testSpeed = async () => {
+      try {
+        const startTime = performance.now();
+        await fetch('https://picsum.photos/200/200?random=' + Date.now(), {
+          cache: 'no-store',
+          mode: 'cors',
         });
+        const endTime = performance.now();
+        
+        const duration = (endTime - startTime) / 1000;
+        const speedMbps = Math.max((40 * 8) / (duration * 1000), 5);
+        const finalSpeed = Math.min(speedMbps * 2, 50);
+        
+        await updateNetworkSpeed(finalSpeed);
+      } catch (error) {
+        console.error('Speed test failed:', error);
+        await updateNetworkSpeed(Math.random() * 25 + 15);
       }
-    } catch (error) {
-      toast({
-        variant: "destructive",
-        title: "Connection Failed",
-        description: "Failed to connect wallet. Please try again.",
-        duration: 3000,
-      });
-    }
-  };
+    };
 
-  const handleAuth = () => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (isSignup) {
-      if (userEmail && password && confirmPassword) {
-        if (!emailRegex.test(userEmail)) {
-          toast({
-            variant: "destructive",
-            title: "Invalid Email",
-            description: "Please enter a valid email address.",
-            duration: 3000,
-          });
-          return;
-        }
-        if (password !== confirmPassword) {
-          toast({
-            variant: "destructive",
-            title: "Password Mismatch",
-            description: "Passwords do not match.",
-            duration: 3000,
-          });
-          return;
-        }
-        if (password.length < 8) {
-          toast({
-            variant: "destructive",
-            title: "Password Too Short",
-            description: "Password must be at least 8 characters long.",
-            duration: 3000,
-          });
-          return;
-        }
-        setIsLoggedIn(true);
-        setIsSignup(false);
-        toast({
-          title: "Account Created",
-          description: `Welcome to LazrChain, ${userEmail}!`,
-          duration: 3000,
-        });
-      } else {
-        toast({
-          variant: "destructive",
-          title: "Signup Failed",
-          description: "Please fill in all fields.",
-          duration: 3000,
-        });
-      }
-    } else {
-      if (userEmail && password) {
-        if (!emailRegex.test(userEmail)) {
-          toast({
-            variant: "destructive",
-            title: "Invalid Email",
-            description: "Please enter a valid email address.",
-            duration: 3000,
-          });
-          return;
-        }
-        setIsLoggedIn(true);
-        toast({
-          title: "Login Successful",
-          description: `Welcome back, ${userEmail}!`,
-          duration: 3000,
-        });
-      } else {
-        toast({
-          variant: "destructive",
-          title: "Login Failed",
-          description: "Please enter valid email and password.",
-          duration: 3000,
-        });
-      }
-    }
-  };
+    testSpeed();
+  }, [updateNetworkSpeed]);
 
   const handleLogout = () => {
-    setIsLoggedIn(false);
-    setIsWalletConnected(false);
-    setWalletAddress("");
-    setUserEmail("");
-    setPassword("");
-    setConfirmPassword("");
-    setIsSidebarOpen(false);
-    setIsProfileOpen(false);
-    setIsDepositOpen(false);
-    setUsdtBalance(0);
-    setTodayEarnings(0);
-    setNetworkSpeed(0);
-    setReferralEarnings(0);
+    logout();
     toast({
       title: "Logged Out",
       description: "You have been successfully logged out.",
-      duration: 3000,
     });
-  };
-
-  const handleDeposit = () => {
-    const amount = parseFloat(depositAmount);
-    if (amount >= 10 && amount <= 1500) {
-      setIsDepositOpen(true);
-    } else {
-      toast({
-        variant: "destructive",
-        title: "Invalid Amount",
-        description: "Please enter an amount between $10 and $1500.",
-        duration: 3000,
-      });
-    }
-  };
-
-  const confirmDeposit = () => {
-    const amount = parseFloat(depositAmount);
-    setUsdtBalance((prev) => prev + amount);
-    setDepositAmount("");
-    setIsDepositOpen(false);
-    toast({
-      title: "Deposit Successful",
-      description: `Successfully deposited ${amount} USDT to your account.`,
-      duration: 3000,
-    });
-  };
-
-  const handleWithdraw = () => {
-    const amount = parseFloat(withdrawAmount);
-    if (amount > 0 && amount <= usdtBalance) {
-      setUsdtBalance((prev) => prev - amount);
-      setWithdrawAmount("");
-      toast({
-        title: "Withdrawal Successful",
-        description: `Successfully withdrew ${amount} USDT. Funds will arrive within 10–30 minutes.`,
-        duration: 3000,
-      });
-    } else if (amount > usdtBalance) {
-      toast({
-        variant: "destructive",
-        title: "Insufficient Balance",
-        description: "You don't have enough USDT to withdraw this amount.",
-        duration: 3000,
-      });
-    } else {
-      toast({
-        variant: "destructive",
-        title: "Invalid Amount",
-        description: "Please enter a valid withdrawal amount.",
-        duration: 3000,
-      });
-    }
-  };
-
-  const handleProfileUpdate = () => {
-    if (oldPassword && newPassword) {
-      if (newPassword.length < 8) {
-        toast({
-          variant: "destructive",
-          title: "Password Too Short",
-          description: "New password must be at least 8 characters long.",
-          duration: 3000,
-        });
-        return;
-      }
-      setPassword(newPassword);
-      toast({
-        title: "Password Updated",
-        description: "Your password has been successfully updated.",
-        duration: 3000,
-      });
-    } else {
-      toast({
-        variant: "destructive",
-        title: "Missing Information",
-        description: "Please enter both old and new passwords.",
-        duration: 3000,
-      });
-    }
-    setOldPassword("");
-    setNewPassword("");
-    setIsProfileOpen(false);
-  };
-
-  const claimReward = (amount: number) => {
-    setUsdtBalance((prev) => prev + amount);
-  };
-
-  const updateLastRewardClaim = () => {
-    setLastRewardClaim(Date.now());
   };
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
-  const copyToClipboard = (text: string, type: string) => {
-    navigator.clipboard.writeText(text);
-    toast({
-      title: `${type} Address Copied`,
-      description: `${text.substring(0, 6)}...${text.substring(text.length - 4)}`,
-      duration: 3000,
-    });
-  };
-
-  if (!isLoggedIn) {
-    return (
-      <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-gray-900 to-gray-900 dark:from-gray-950 dark:to-gray-950">
-        <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute top-1/4 left-1/4 w-32 h-32 bg-gradient-to-r from-green-400 to-blue-500 rounded-full opacity-20 animate-pulse"></div>
-          <div className="absolute top-3/4 right-1/4 w-24 h-24 bg-gradient-to-r from-purple-400 to-pink-500 rounded-full opacity-20 animate-bounce"></div>
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 border-2 border-green-400 rounded-full opacity-10 animate-spin" style={{ animationDuration: "20s" }}></div>
-          <div className="absolute top-1/3 right-1/3 w-16 h-16 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-lg opacity-20 animate-ping"></div>
-        </div>
-
-        <div className="relative z-10 flex items-center justify-center min-h-screen p-4">
-          <Card className="w-full max-w-md backdrop-blur-lg bg-white/10 dark:bg-gray-800/10 border-white/20 dark:border-gray-700/20 shadow-2xl">
-            <CardHeader className="text-center space-y-4">
-              <div className="flex items-center justify-center space-x-2">
-                <div className="w-10 h-10 bg-gradient-to-r from-green-400 to-blue-500 dark:from-green-500 dark:to-blue-600 rounded-lg flex items-center justify-center">
-                  <span className="text-white font-bold text-xl">L</span>
-                </div>
-                <span className="text-2xl font-bold text-white dark:text-gray-100">LazrChain</span>
-              </div>
-              <CardTitle className="text-white dark:text-gray-100 text-2xl">{isSignup ? "Create Account" : "Welcome Back"}</CardTitle>
-              <CardDescription className="text-gray-300 dark:text-gray-400">{isSignup ? "Join LazrChain and start earning" : "Sign in to your dashboard"}</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <Input
-                type="email"
-                placeholder="Email"
-                value={userEmail}
-                onChange={(e) => setUserEmail(e.target.value)}
-                className="bg-white/10 dark:bg-gray-800/10 border-white/20 dark:border-gray-700/20 text-white dark:text-gray-200 placeholder:text-gray-300 dark:placeholder:text-gray-500"
-              />
-              <Input
-                type="password"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="bg-white/10 dark:bg-gray-800/10 border-white/20 dark:border-gray-700/20 text-white dark:text-gray-200 placeholder:text-gray-300 dark:placeholder:text-gray-500"
-              />
-              {isSignup && (
-                <Input
-                  type="password"
-                  placeholder="Confirm Password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="bg-white/10 dark:bg-gray-800/10 border-white/20 dark:border-gray-700/20 text-white dark:text-gray-200 placeholder:text-gray-300 dark:placeholder:text-gray-500"
-                />
-              )}
-              <Button
-                onClick={handleAuth}
-                className="w-full bg-gradient-to-r from-green-500 to-blue-500 dark:from-green-600 dark:to-blue-600 hover:from-green-600 hover:to-blue-600 dark:hover:from-green-700 dark:hover:to-blue-700 text-white font-semibold text-sm py-2 sm:py-3 shadow-lg hover:shadow-xl transition-all duration-200"
-              >
-                {isSignup ? (
-                  <>
-                    <UserPlus className="w-4 h-4 mr-2" />
-                    Create Account
-                  </>
-                ) : (
-                  "Sign In"
-                )}
-              </Button>
-              <div className="text-center">
-                <button
-                  onClick={() => setIsSignup(!isSignup)}
-                  className="text-green-400 hover:text-green-300 dark:text-green-300 dark:hover:text-green-200 text-sm font-medium transition-colors"
-                >
-                  {isSignup ? "Already have an account? Sign in" : "Don't have an account? Sign up"}
-                </button>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-    );
-  }
+  const navigation = [
+    { id: "overview", icon: TrendingUp, label: "Overview" },
+    { id: "wallet", icon: Wallet, label: "Wallet" },
+    { id: "deposit", icon: DollarSign, label: "Deposit" },
+    { id: "referrals", icon: Users, label: "Referrals" },
+    { id: "rewards", icon: Gift, label: "Rewards" },
+  ];
 
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-gray-900 flex">
@@ -541,17 +79,17 @@ const Dashboard = () => {
           isSidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         }`}
       >
-        <div className="p-4 border-b bg-gradient-to-r from-green-500 to-blue-500 dark:from-green-600 dark:to-blue-600">
-          <div className="w-full flex items-center justify-between">
+        <div className="p-4 border-b bg-gradient-to-r from-green-500 to-blue-500">
+          <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-white dark:bg-gray-700 rounded-lg flex items-center justify-center">
-                <span className="text-green-500 dark:text-green-400 font-bold text-lg">L</span>
+              <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
+                <span className="text-green-500 font-bold text-lg">L</span>
               </div>
-              <span className="text-lg font-bold text-white dark:text-gray-100 truncate">LazrChain</span>
+              <span className="text-lg font-bold text-white">LazrChain</span>
             </div>
             <Button
               variant="ghost"
-              className="lg:hidden text-white dark:text-gray-200 p-2 hover:bg-white/10"
+              className="lg:hidden text-white p-2"
               onClick={toggleSidebar}
             >
               <X className="w-6 h-6" />
@@ -561,11 +99,7 @@ const Dashboard = () => {
 
         <nav className="mt-4 flex-1 px-2">
           <div className="space-y-2">
-            {[
-              { id: "dashboard", icon: TrendingUp, label: "Dashboard" },
-              { id: "referral", icon: Users, label: "Referral Program" },
-              { id: "rewards", icon: Gift, label: "Rewards" },
-            ].map((item) => (
+            {navigation.map((item) => (
               <button
                 key={item.id}
                 onClick={() => {
@@ -574,12 +108,12 @@ const Dashboard = () => {
                 }}
                 className={`w-full flex items-center space-x-3 px-3 py-3 rounded-lg text-left transition-all duration-200 text-sm font-medium ${
                   activeTab === item.id
-                    ? "bg-gradient-to-r from-green-500 to-blue-500 dark:from-green-600 dark:to-blue-600 text-white shadow-md"
-                    : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:scale-[1.02] active:scale-100"
+                    ? "bg-gradient-to-r from-green-500 to-blue-500 text-white shadow-md"
+                    : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
                 }`}
               >
                 <item.icon className="w-5 h-5 flex-shrink-0" />
-                <span className="truncate">{item.label}</span>
+                <span>{item.label}</span>
               </button>
             ))}
           </div>
@@ -589,336 +123,147 @@ const Dashboard = () => {
           <Button
             onClick={handleLogout}
             variant="outline"
-            className="w-full flex items-center space-x-2 text-sm font-medium hover:bg-red-50 hover:border-red-300 hover:text-red-600 dark:hover:bg-red-900/20 dark:hover:border-red-700 dark:hover:text-red-400 transition-colors py-3"
+            className="w-full flex items-center space-x-2 text-sm font-medium hover:bg-red-50 hover:border-red-300 hover:text-red-600"
           >
             <LogOut className="w-4 h-4" />
-            <span className="truncate">Logout</span>
+            <span>Logout</span>
           </Button>
         </div>
       </div>
 
       {/* Backdrop for mobile */}
-      {isSidebarOpen && <div className="fixed inset-0 bg-black/50 dark:bg-black/70 z-10 lg:hidden" onClick={toggleSidebar} />}
+      {isSidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-black/50 z-10 lg:hidden" 
+          onClick={toggleSidebar} 
+        />
+      )}
 
       {/* Main Content */}
       <div className="flex-1">
-        <div className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700 px-4 py-4">
+        {/* Header */}
+        <div className="bg-white dark:bg-gray-800 shadow-sm border-b px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <Button
                 variant="ghost"
-                className="lg:hidden p-2 hover:bg-gray-100 dark:hover:bg-gray-700"
+                className="lg:hidden p-2"
                 onClick={toggleSidebar}
               >
-                <Menu className="w-6 h-6 text-gray-600 dark:text-gray-300" />
+                <Menu className="w-6 h-6" />
               </Button>
-              <h1 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">
-                {activeTab === "dashboard" && "Dashboard"}
-                {activeTab === "referral" && "Referral Program"}
-                {activeTab === "rewards" && "Rewards"}
-              </h1>
+              <h1 className="text-xl font-bold">Dashboard</h1>
             </div>
-            <div className="flex items-center space-x-3">
-              <div
-                className="flex items-center space-x-2 p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors cursor-pointer"
-                onClick={() => setIsProfileOpen(true)}
-              >
-                <div className="w-8 h-8 bg-gradient-to-r from-green-400 to-blue-500 dark:from-green-500 dark:to-blue-600 rounded-full flex items-center justify-center">
-                  <span className="text-white font-medium text-sm">U</span>
-                </div>
-                <span className="text-gray-700 dark:text-gray-200 font-medium text-sm truncate max-w-[100px] sm:max-w-[120px] md:max-w-[150px]">
-                  {userEmail}
-                </span>
+            <div className="flex items-center space-x-4">
+              <Badge variant="outline">
+                {user?.tier?.toUpperCase()} Tier
+              </Badge>
+              <div className="text-sm text-muted-foreground">
+                {user?.email}
               </div>
             </div>
           </div>
         </div>
 
-        {/* Profile Modal */}
-        {isProfileOpen && (
-          <Dialog open={isProfileOpen} onOpenChange={setIsProfileOpen}>
-            <DialogContent className="sm:max-w-md bg-white dark:bg-gray-800 border-green-200 dark:border-green-700">
-              <DialogHeader>
-                <DialogTitle className="text-lg text-gray-900 dark:text-white">Profile Settings</DialogTitle>
-                <CardDescription className="text-sm text-gray-500 dark:text-gray-400">
-                  View your account information and update your password
-                </CardDescription>
-              </DialogHeader>
-              <div className="space-y-4">
-                <div>
-                  <label className="text-sm font-medium text-gray-700 dark:text-gray-200 mb-1 block">Email</label>
-                  <Input
-                    type="email"
-                    value={userEmail}
-                    readOnly
-                    className="text-sm text-gray-900 dark:text-gray-200 bg-gray-50 dark:bg-gray-700 cursor-not-allowed"
-                  />
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-gray-700 dark:text-gray-200 mb-1 block">Wallet Address</label>
-                  <Input
-                    type="text"
-                    value={walletAddress || "Not connected"}
-                    readOnly
-                    className="text-sm text-gray-900 dark:text-gray-200 bg-gray-50 dark:bg-gray-700 cursor-not-allowed font-mono"
-                  />
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-gray-700 dark:text-gray-200 mb-1 block">Old Password</label>
-                  <Input
-                    type="password"
-                    placeholder="Enter current password"
-                    value={oldPassword}
-                    onChange={(e) => setOldPassword(e.target.value)}
-                    className="text-sm text-gray-900 dark:text-gray-200"
-                  />
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-gray-700 dark:text-gray-200 mb-1 block">New Password</label>
-                  <Input
-                    type="password"
-                    placeholder="Enter new password"
-                    value={newPassword}
-                    onChange={(e) => setNewPassword(e.target.value)}
-                    className="text-sm text-gray-900 dark:text-gray-200"
-                  />
-                </div>
-              </div>
-              <DialogFooter>
-                <Button
-                  onClick={handleProfileUpdate}
-                  className="w-full bg-gradient-to-r from-green-500 to-blue-500 dark:from-green-600 dark:to-blue-600 hover:from-green-600 hover:to-blue-600 dark:hover:from-green-700 dark:hover:to-blue-700 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-200"
-                >
-                  Update Password
-                </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
-        )}
-
-        {/* Deposit Modal - Only TRC20 */}
-        {isDepositOpen && (
-          <Dialog open={isDepositOpen} onOpenChange={setIsDepositOpen}>
-            <DialogContent className="sm:max-w-md bg-white dark:bg-gray-800 border-green-200 dark:border-green-700">
-              <DialogHeader>
-                <DialogTitle className="text-lg text-gray-900 dark:text-white">Deposit USDT</DialogTitle>
-                <CardDescription className="text-sm text-gray-500 dark:text-gray-400">
-                  Scan the QR code or copy the TRC20 address to deposit {depositAmount} USDT
-                </CardDescription>
-              </DialogHeader>
-              <div className="space-y-4">
-                <div className="flex justify-center p-4 bg-white rounded-xl">
-                  <QRCodeSVG value={trc20Address} size={160} bgColor="#ffffff" fgColor="#000000" />
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-gray-700 dark:text-gray-200 mb-1 block">TRC20 Address</label>
-                  <div className="flex space-x-2">
-                    <Input
-                      value={trc20Address}
-                      readOnly
-                      className="flex-1 text-sm text-gray-900 dark:text-gray-200 bg-gray-50 dark:bg-gray-700 font-mono"
-                    />
-                    <Button
-                      onClick={() => copyToClipboard(trc20Address, "TRC20")}
-                      className="bg-green-500 hover:bg-green-600 dark:bg-green-600 dark:hover:bg-green-700 text-white shadow-lg hover:shadow-xl transition-all duration-200"
-                    >
-                      <Copy className="w-4 h-4" />
-                    </Button>
-                  </div>
-                </div>
-              </div>
-              <DialogFooter>
-                <Button
-                  onClick={confirmDeposit}
-                  className="w-full bg-gradient-to-r from-green-500 to-blue-500 dark:from-green-600 dark:to-blue-600 hover:from-green-600 hover:to-blue-600 dark:hover:from-green-700 dark:hover:to-blue-700 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-200"
-                >
-                  Confirm Deposit
-                </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
-        )}
-
-        <div className="p-4 sm:p-6 lg:p-8">
-          {activeTab === "dashboard" && (
+        {/* Content */}
+        <div className="p-6">
+          {activeTab === "overview" && (
             <div className="space-y-6">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <Card className="bg-white dark:bg-gray-800 shadow-xl hover:shadow-2xl transition-all duration-300 border-0 overflow-hidden">
-                  <CardHeader className="bg-gradient-to-r from-green-500 to-blue-500 dark:from-green-600 dark:to-blue-600 text-white relative">
-                    <div className="absolute top-0 right-0 w-20 h-20 bg-white/10 rounded-full -mr-10 -mt-10"></div>
-                    <CardTitle className="flex items-center text-base sm:text-lg relative z-10">
-                      <DollarSign className="w-5 h-5 mr-2 bg-white/20 p-1 rounded-full" />
-                      USDT Balance
-                    </CardTitle>
-                    <CardDescription className="text-green-100 dark:text-green-200 text-sm relative z-10">
-                      Manage your USDT deposits and withdrawals
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-4 p-4 sm:p-6">
-                    <div className="text-center bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-600 rounded-xl p-4">
-                      <div className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
-                        ${usdtBalance.toFixed(2)}
+              {/* Stats Cards */}
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <Card>
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-medium text-muted-foreground">USDT Balance</p>
+                        <p className="text-2xl font-bold">${user?.usdtBalance?.toFixed(2) || '0.00'}</p>
                       </div>
-                      <div className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 font-medium">USDT Balance</div>
-                    </div>
-                    <div className="grid grid-cols-1 gap-4">
-                      <div className="space-y-3">
-                        <Input
-                          type="number"
-                          placeholder="Amount to deposit ($10-$1500)"
-                          value={depositAmount}
-                          onChange={(e) => setDepositAmount(e.target.value)}
-                          className="border-gray-300 dark:border-gray-600 focus:border-green-500 dark:focus:border-green-400 text-sm text-gray-900 dark:text-gray-200 h-11 sm:h-12 rounded-xl"
-                        />
-                        <Button
-                          onClick={handleDeposit}
-                          className="w-full bg-gradient-to-r from-green-500 to-green-600 dark:from-green-600 dark:to-green-700 hover:from-green-600 hover:to-green-700 dark:hover:from-green-700 dark:hover:to-green-800 text-white text-sm py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-200"
-                        >
-                          <DollarSign className="w-4 h-4 mr-2" />
-                          Deposit USDT
-                        </Button>
-                      </div>
-                      <div className="space-y-3">
-                        <Input
-                          type="number"
-                          placeholder="Amount to withdraw"
-                          value={withdrawAmount}
-                          onChange={(e) => setWithdrawAmount(e.target.value)}
-                          className="border-gray-300 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-400 text-sm text-gray-900 dark:text-gray-200 h-11 sm:h-12 rounded-xl"
-                        />
-                        <Button
-                          onClick={handleWithdraw}
-                          variant="outline"
-                          className="w-full border-2 border-blue-500 dark:border-blue-600 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:border-blue-600 dark:hover:border-blue-500 text-sm py-3 rounded-xl font-semibold transition-all duration-200"
-                        >
-                          <ArrowRight className="w-4 h-4 mr-2" />
-                          Withdraw USDT
-                        </Button>
-                      </div>
+                      <DollarSign className="w-8 h-8 text-green-500" />
                     </div>
                   </CardContent>
                 </Card>
 
-                <Card className="bg-white dark:bg-gray-800 shadow-xl hover:shadow-2xl transition-all duration-300 border-0 overflow-hidden">
-                  <CardHeader className="bg-gradient-to-r from-blue-500 to-purple-500 dark:from-blue-600 dark:to-purple-600 text-white relative">
-                    <div className="absolute top-0 right-0 w-20 h-20 bg-white/10 rounded-full -mr-10 -mt-10"></div>
-                    <CardTitle className="flex items-center text-base sm:text-lg relative z-10">
-                      <TrendingUp className="w-5 h-5 mr-2 bg-white/20 p-1 rounded-full" />
-                      Real-Time Earnings
-                    </CardTitle>
-                    <CardDescription className="text-blue-100 dark:text-blue-200 text-sm relative z-10">
-                      Live earnings based on network performance
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-4 p-4 sm:p-6">
-                    <div className="text-center bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 rounded-xl p-4">
-                      <div className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
-                        ${todayEarnings.toFixed(4)}
+                <Card>
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-medium text-muted-foreground">Total Earnings</p>
+                        <p className="text-2xl font-bold">${user?.totalEarnings?.toFixed(4) || '0.0000'}</p>
                       </div>
-                      <div className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 font-medium">Daily Earnings (USDT)</div>
+                      <TrendingUp className="w-8 h-8 text-blue-500" />
                     </div>
-                    <div className="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-600 rounded-xl p-4">
-                      <div className="flex items-center justify-between mb-2">
-                        <div className="flex items-center space-x-2">
-                          <Wifi className={`w-4 h-4 ${isSpeedTesting ? "animate-pulse text-blue-500" : "text-green-500"}`} />
-                          <span className="text-sm font-medium text-gray-700 dark:text-gray-200">Network Speed</span>
-                        </div>
-                        <Button
-                          onClick={testInternetSpeed}
-                          disabled={isSpeedTesting}
-                          size="sm"
-                          variant="outline"
-                          className="text-xs h-7 px-3 rounded-lg border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                        >
-                          {isSpeedTesting ? "Testing..." : "Refresh"}
-                        </Button>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-medium text-muted-foreground">Referral Earnings</p>
+                        <p className="text-2xl font-bold">${user?.referralEarnings?.toFixed(4) || '0.0000'}</p>
                       </div>
-                      <div className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
-                        {networkSpeed.toFixed(1)} <span className="text-sm text-gray-500 dark:text-gray-400">Mbps</span>
+                      <Users className="w-8 h-8 text-purple-500" />
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-medium text-muted-foreground">Network Speed</p>
+                        <p className="text-2xl font-bold">{user?.networkSpeed?.toFixed(1) || '0.0'} Mbps</p>
                       </div>
-                      <div className="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2 mt-2">
-                        <div
-                          className="bg-gradient-to-r from-green-500 to-blue-500 h-2 rounded-full transition-all duration-500"
-                          style={{ width: `${Math.min((networkSpeed / 100) * 100, 100)}%` }}
-                        ></div>
-                      </div>
+                      <Gift className="w-8 h-8 text-orange-500" />
                     </div>
                   </CardContent>
                 </Card>
               </div>
 
-              <Card className="bg-white dark:bg-gray-800 shadow-xl border-0 overflow-hidden">
-                <CardHeader className="bg-gradient-to-r from-emerald-500 to-teal-500 dark:from-emerald-600 dark:to-teal-600 text-white">
-                  <CardTitle className="flex items-center text-base sm:text-lg">
-                    <TrendingUp className="w-5 h-5 mr-2 bg-white/20 p-1 rounded-full" />
-                    Earnings Analytics
-                  </CardTitle>
-                  <CardDescription className="text-emerald-100 dark:text-emerald-200 text-sm">
-                    Track your earning performance over time
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="p-4 sm:p-6">
-                  <div className="h-64">
-                    <Line data={chartData} options={chartOptions} />
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="bg-white dark:bg-gray-800 shadow-xl border-0">
+              {/* Quick Actions */}
+              <Card>
                 <CardHeader>
-                  <CardTitle className="flex items-center text-lg text-gray-900 dark:text-white">
-                    <Coins className="w-5 h-5 mr-2 text-yellow-500 dark:text-yellow-400" />
-                    Earnings History
-                  </CardTitle>
-                  <CardDescription className="text-sm text-gray-500 dark:text-gray-400">
-                    Detailed record of your daily USDT earnings
+                  <CardTitle>Quick Actions</CardTitle>
+                  <CardDescription>
+                    Get started with LazrChain investment platform
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="overflow-x-auto">
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead className="text-sm font-semibold text-gray-700 dark:text-gray-200">Date</TableHead>
-                          <TableHead className="text-right text-sm font-semibold text-gray-700 dark:text-gray-200">
-                            Amount (USDT)
-                          </TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {pastEarnings.map((earning, index) => (
-                          <TableRow key={index} className="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
-                            <TableCell className="text-sm font-medium text-gray-600 dark:text-gray-300">{earning.date}</TableCell>
-                            <TableCell className="text-right font-bold text-sm text-green-600 dark:text-green-400">
-                              ${earning.amount.toFixed(4)}
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <Button 
+                      onClick={() => setActiveTab("wallet")}
+                      variant="outline" 
+                      className="h-20 flex-col"
+                    >
+                      <Wallet className="w-6 h-6 mb-2" />
+                      Connect Wallet
+                    </Button>
+                    <Button 
+                      onClick={() => setActiveTab("deposit")}
+                      variant="outline" 
+                      className="h-20 flex-col"
+                    >
+                      <DollarSign className="w-6 h-6 mb-2" />
+                      Deposit USDT
+                    </Button>
+                    <Button 
+                      onClick={() => setActiveTab("rewards")}
+                      variant="outline" 
+                      className="h-20 flex-col"
+                    >
+                      <Gift className="w-6 h-6 mb-2" />
+                      Claim Rewards
+                    </Button>
                   </div>
                 </CardContent>
               </Card>
             </div>
           )}
 
-          {activeTab === "referral" && (
-            <ReferralProgram
-              usdtBalance={usdtBalance}
-              networkSpeed={networkSpeed}
-              onReferralEarningsUpdate={setReferralEarnings}
-            />
-          )}
-
-          {activeTab === "rewards" && (
-            <Rewards
-              usdtBalance={usdtBalance}
-              referralEarnings={referralEarnings}
-              lastRewardClaim={lastRewardClaim}
-              onClaimReward={claimReward}
-              onUpdateLastRewardClaim={updateLastRewardClaim}
-            />
-          )}
+          {activeTab === "wallet" && <WalletConnection />}
+          {activeTab === "deposit" && <DepositForm />}
+          {activeTab === "referrals" && <ReferralSystem />}
+          {activeTab === "rewards" && <RewardsClaim />}
         </div>
       </div>
     </div>
