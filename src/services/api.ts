@@ -4,7 +4,8 @@ class ApiService {
   private token: string | null = null;
 
   constructor() {
-    this.token = localStorage.getItem('authToken');
+    // Only access localStorage when window is defined (browser environment)
+    this.token = typeof window !== 'undefined' ? localStorage.getItem('authToken') : null;
   }
 
   private async request(endpoint: string, options: RequestInit = {}) {
@@ -43,7 +44,9 @@ class ApiService {
     
     if (data.token) {
       this.token = data.token;
-      localStorage.setItem('authToken', data.token);
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('authToken', data.token);
+      }
     }
     
     return data;
@@ -57,7 +60,9 @@ class ApiService {
     
     if (data.token) {
       this.token = data.token;
-      localStorage.setItem('authToken', data.token);
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('authToken', data.token);
+      }
     }
     
     return data;
@@ -150,7 +155,9 @@ class ApiService {
   // Utility methods
   logout() {
     this.token = null;
-    localStorage.removeItem('authToken');
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('authToken');
+    }
   }
 
   isAuthenticated() {
